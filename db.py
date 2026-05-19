@@ -187,7 +187,8 @@ def import_rooms(rooms):
     with _db() as conn:
         conn.execute("DELETE FROM rooms")
         for r in rooms:
-            status = r.get("status") if r.get("status") in STATUSES else "To Do"
+            status = r.get("status") if r.get(
+                "status") in STATUSES else "To Do"
             conn.execute(
                 _INSERT,
                 {
@@ -225,36 +226,5 @@ def _init_db():
         )
 
 
-# First-run demo data so the dashboard/chart are not empty. Once the table has
-# any rows (including after the user deletes all of them and adds their own)
-# this never runs again.
-def _seed_if_empty():
-    with _db() as conn:
-        n = conn.execute("SELECT COUNT(*) AS n FROM rooms").fetchone()["n"]
-        if n > 0:
-            return
-        seed = [
-            {"name": "Linux Fundamentals", "category": "Fundamentals", "difficulty": "Easy", "deadline": "2026-01-31", "status": "Done", "tags": "linux,basics", "url": "https://tryhackme.com/room/linuxfundamentalspart1"},
-            {"name": "Intro to Networking", "category": "Network", "difficulty": "Easy", "deadline": "2026-02-28", "status": "Done", "tags": "networking,basics", "url": "https://tryhackme.com/room/introtonetworking"},
-            {"name": "OWASP Top 10", "category": "Web", "difficulty": "Medium", "deadline": "2026-03-31", "status": "Done", "tags": "web,owasp", "url": "https://tryhackme.com/room/owasptop10"},
-            {"name": "Burp Suite Basics", "category": "Web", "difficulty": "Medium", "deadline": "2026-04-30", "status": "Done", "tags": "web,burp", "url": "https://tryhackme.com/room/burpsuitebasics"},
-            {"name": "Metasploit", "category": "Red Team", "difficulty": "Medium", "deadline": "2026-05-31", "status": "In Progress", "tags": "exploitation,msf", "url": "https://tryhackme.com/room/rpmetasploit"},
-            {"name": "Nmap", "category": "Network", "difficulty": "Easy", "deadline": "2026-05-31", "status": "In Progress", "tags": "recon,scanning", "url": "https://tryhackme.com/room/furthernmap"},
-            {"name": "SQL Injection", "category": "Web", "difficulty": "Hard", "deadline": "2026-06-30", "status": "To Do", "tags": "web,sqli", "url": "https://tryhackme.com/room/sqlinjectionlm"},
-            {"name": "Active Directory Basics", "category": "Red Team", "difficulty": "Hard", "deadline": "2026-07-31", "status": "To Do", "tags": "ad,windows", "url": "https://tryhackme.com/room/winadbasics"},
-            {"name": "Hydra", "category": "Red Team", "difficulty": "Medium", "deadline": "2026-08-31", "status": "To Do", "tags": "bruteforce,passwords", "url": "https://tryhackme.com/room/hydra"},
-            {"name": "Wireshark Basics", "category": "Network", "difficulty": "Easy", "deadline": "2026-09-30", "status": "To Do", "tags": "forensics,pcap", "url": "https://tryhackme.com/room/wiresharkthebasics"},
-        ]
-        for r in seed:
-            conn.execute(
-                _INSERT,
-                {
-                    **r,
-                    "completed_date": r["deadline"] if r["status"] == "Done" else None,
-                },
-            )
-
-
 # Run on import, exactly like the Node module did on require().
 _init_db()
-_seed_if_empty()

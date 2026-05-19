@@ -25,7 +25,22 @@
       "PowerShell(Remove-Item *)",
       "PowerShell(pip install *)",
       "PowerShell(cd \"C:\\\\Personal Projects\\\\Room tracker\"; python -c \"import db; rs = db.list_rooms\\(\\); print\\('rooms:', len\\(rs\\)\\); print\\(rs[0] if rs else 'empty'\\)\"; \"exit: $LASTEXITCODE\")",
-      "PowerShell(cd \"C:\\\\Personal Projects\\\\Room tracker\"; $env:PORT=3000; python main.py)"
+      "PowerShell(cd \"C:\\\\Personal Projects\\\\Room tracker\"; $env:PORT=3000; python main.py)",
+      "Bash(cd /tmp)",
+      "Bash(curl.exe -sL -A 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)' -o thm.html -w 'http=%{http_code} size=%{size_download} final=%{url_effective}\\\\n' https://tryhackme.com/room/__TRACKED_VAR__)",
+      "Bash(curl.exe -sL -A 'Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 Chrome/120 Safari/537.36' -o p___TRACKED_VAR__.html -w '%{http_code}' https://tryhackme.com/room/__TRACKED_VAR__)",
+      "Bash(grep -oE '<meta property=\"og:title\" content=\"[^\"]*\"' p___TRACKED_VAR__.html)",
+      "WebFetch(domain:tryhackme.com)",
+      "Bash(curl -s --max-time 20 \"https://tryhackme.com/api/rooms/details?codes=furthernmap\")",
+      "Bash(curl -s --max-time 20 \"https://tryhackme.com/api/room/furthernmap\")",
+      "Bash(curl -s -L --max-time 25 -A \"Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0 Safari/537.36\" \"https://tryhackme.com/room/furthernmap\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\)['data']; print\\(sorted\\(d.keys\\(\\)\\)\\)\")",
+      "Bash(python -m py_compile thm.py main.py db.py)",
+      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://tryhackme.com/room/furthernmap'\\)\\)\")",
+      "Bash(curl -s -w ' [%{http_code}]\\\\n' http://localhost:3199/api/room-info?url=__CMDSUB_OUTPUT__)",
+      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('tryhackme.com/room/owasptop10/?foo=1'\\)\\)\")",
+      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://tryhackme.com/room/zzzznotarealzzz'\\)\\)\")",
+      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://example.com/room/x'\\)\\)\")"
     ]
   }
 }

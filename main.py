@@ -16,6 +16,7 @@ from fastapi.responses import JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 
 import db
+import thm
 
 PUBLIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
 
@@ -102,6 +103,15 @@ async def import_rooms(request: Request):
     else:
         rooms = None
     return db.import_rooms(rooms)
+
+
+# Look up a TryHackMe room's public metadata so the Add form can prefill
+# itself. Defined as a sync `def` so FastAPI runs the blocking urllib fetch in
+# its threadpool (off the event loop). thm.py raises db.HttpError on a bad URL
+# / missing room / network failure, handled by the same handler as db errors.
+@app.get("/api/room-info")
+def room_info(url: str = ""):
+    return thm.fetch_room_info(url)
 
 
 # Serve the frontend. Mounted last so the /api routes above take precedence;

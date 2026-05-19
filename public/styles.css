@@ -70,6 +70,12 @@ input:focus, select:focus { outline: 1.5px solid #3b6d11; outline-offset: -0.5px
 .add-form { background: var(--color-background-secondary); border-radius: var(--border-radius-lg); padding: 1rem; margin-bottom: 1.5rem; display: grid; grid-template-columns: 2fr 2fr 1fr 1fr 1fr 1.5fr auto; gap: 8px; align-items: end; }
 .add-form label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 3px; }
 .add-form input, .add-form select { width: 100%; }
+/* Anchor the URL lookup hint just below its input without growing the grid
+   row (the form is align-items:end, so an in-flow span would misalign it). */
+.add-form > div { position: relative; }
+.url-hint { position: absolute; top: 100%; left: 0; right: 0; margin-top: 3px; font-size: 11px; line-height: 1.2; color: var(--color-text-secondary); }
+.url-hint.err { color: #a32d2d; }
+.url-hint.ok { color: #3b6d11; }
 
 .chart-wrap { position: relative; width: 100%; height: 180px; margin-bottom: 1.5rem; }
 .progress-bar-outer { background: var(--color-background-secondary); border-radius: 20px; height: 8px; overflow: hidden; }

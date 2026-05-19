@@ -32,7 +32,7 @@ with the `DB_PATH` env var (useful for a throwaway test DB).
 
 ## Architecture
 
-Three layers, each one file/area:
+Three core layers plus one network helper, each one file/area:
 
 - **`db.py`** — the only place that touches SQLite (stdlib `sqlite3`). A
   `_db()` context manager opens one connection per operation (commit on
@@ -49,9 +49,21 @@ Three layers, each one file/area:
   so e.g. a missing name becomes a real 400 and the frontend's error handling
   is unchanged. Bodies are parsed permissively (empty/invalid → `{}`) to mirror
   Express's `req.body || {}`.
+- **`thm.py`** — the **only** code that makes an outbound network request.
+  `fetch_room_info(url)` parses a TryHackMe room URL and fetches the room's
+  public metadata from THM's no-auth endpoint
+  (`/api/v2/rooms/details?roomCode=<code>`) using the **stdlib** (`urllib` +
+  `json`, no new dependency). It returns just `{name, difficulty}` — those are
+  the only fields THM exposes unauthenticated (tags come back as opaque IDs and
+  category not at all, so they stay manual). It raises `db.HttpError` so
+  main.py's existing handler returns the same `{"error": "..."}` shape.
 - **`public/`** — `index.html` + `styles.css` + `app.js`, plus
   `vendor/chart.umd.js` (Chart.js vendored locally so the app works offline;
   do not switch it back to a CDN `<script>`).
+
+The whole app works offline **except** the room-URL lookup (`thm.py` /
+`GET /api/room-info` / the Add-form auto-fill), which needs internet to reach
+tryhackme.com; it fails soft (an inline hint, never blocks adding a room).
 
 **Two invariants carried over from the prototype — preserve them:**
 
@@ -68,9 +80,11 @@ Three layers, each one file/area:
 **API contract (`/api`):** `GET /rooms`, `POST /rooms`, `PATCH /rooms/:id`
 (partial), `DELETE /rooms/:id`, `GET /export` (downloads a JSON backup),
 `POST /import` (accepts `{rooms:[...]}` or a bare array; **replaces all rows**
-atomically — it is a restore, not a merge). Request/response bodies are
-camelCase with `tags` as a string array; `db.py` maps that to/from the
-snake_case columns and a comma-separated `tags` text column.
+atomically — it is a restore, not a merge), `GET /room-info?url=<thm room url>`
+(no DB; returns `{name, difficulty}` scraped live from TryHackMe to prefill the
+Add form — see `thm.py`). Request/response bodies are camelCase with `tags` as
+a string array; `db.py` maps that to/from the snake_case columns and a
+comma-separated `tags` text column.
 
 **`completed_date` is managed server-side, not by the client.** `update_room()`
 stamps it with today's date the first time a room becomes `Done` and clears it

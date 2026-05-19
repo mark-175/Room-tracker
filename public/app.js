@@ -173,6 +173,7 @@ async function addRoom() {
       tags: $('inp-tags').value,
     });
     ['inp-name', 'inp-url', 'inp-deadline', 'inp-tags'].forEach(id => ($(id).value = ''));
+    resetUrlLookup();
     await loadRooms();
     $('inp-name').focus();
   } catch (e) {
@@ -235,6 +236,65 @@ async function importFile(file) {
     alert('Import failed: ' + e.message);
   }
 }
+
+// --- Auto-fill the Add form from a pasted TryHackMe room URL ---
+// On paste/blur of the URL field we ask the server for the room's metadata
+// (server-side so it isn't blocked by CORS / needs no THM login) and fill
+// ONLY fields the user hasn't touched: the name if it's blank, and the
+// difficulty unless the user already picked one. THM only reliably exposes
+// name + difficulty without auth, so tags/category/deadline stay manual.
+const THM_ROOM_RE = /tryhackme\.com\/(?:room|r)\/[A-Za-z0-9_-]+/i;
+let lastLookupUrl = '';   // dedupe: don't re-fetch the same URL on every blur
+let lookupSeq = 0;        // race guard: ignore a response that's been superseded
+let diffTouched = false;  // the user manually chose a difficulty -> don't override
+
+function setUrlHint(msg, kind) {
+  const el = $('url-hint');
+  el.textContent = msg || '';
+  el.className = 'url-hint' + (kind ? ' ' + kind : '');
+}
+
+function resetUrlLookup() {
+  lastLookupUrl = '';
+  diffTouched = false;
+  setUrlHint('');
+}
+
+async function lookupRoomFromUrl() {
+  const url = $('inp-url').value.trim();
+  if (!url || !THM_ROOM_RE.test(url)) { setUrlHint(''); return; }
+  if (url === lastLookupUrl) return;
+  lastLookupUrl = url;
+  const seq = ++lookupSeq;
+  setUrlHint('Looking up room…');
+  try {
+    const info = await api('GET', '/api/room-info?url=' + encodeURIComponent(url));
+    if (seq !== lookupSeq) return;            // a newer lookup won
+    const filled = [];
+    if (info.name && !$('inp-name').value.trim()) {
+      $('inp-name').value = info.name;
+      filled.push('name');
+    }
+    if (info.difficulty && !diffTouched) {
+      const sel = $('inp-diff');
+      if ([...sel.options].some(o => o.value === info.difficulty)) {
+        sel.value = info.difficulty;
+        filled.push('difficulty');
+      }
+    }
+    setUrlHint(filled.length
+      ? 'Filled ' + filled.join(' & ') + ' from TryHackMe'
+      : 'Found on TryHackMe', 'ok');
+  } catch (e) {
+    if (seq !== lookupSeq) return;
+    lastLookupUrl = '';                        // let a retry happen after a failure
+    setUrlHint(e.message, 'err');
+  }
+}
+
+$('inp-url').addEventListener('blur', lookupRoomFromUrl);
+$('inp-url').addEventListener('paste', () => setTimeout(lookupRoomFromUrl, 0));
+$('inp-diff').addEventListener('change', () => { diffTouched = true; });
 
 // --- Event wiring (delegated; table rows are re-rendered constantly) ---
 $('btn-add').addEventListener('click', addRoom);

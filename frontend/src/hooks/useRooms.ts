@@ -6,8 +6,9 @@ import * as roomApi from '../api';
 // Every mutation calls the API, then re-fetches the whole list before the UI
 // re-renders (the old app.js loadRooms()/render() pattern). State is never
 // mutated optimistically. Mutations that drive inline UI feedback (add /
-// import) rethrow so the caller can show its own message; the fire-and-forget
-// row actions surface errors via alert(), matching the original behaviour.
+// import / edit) rethrow so the caller can show its own message; the
+// fire-and-forget row actions surface errors via alert(), matching the
+// original behaviour.
 export function useRooms() {
   const [rooms, setRooms] = useState<Room[]>([]);
 
@@ -43,6 +44,16 @@ export function useRooms() {
     [load],
   );
 
+  // Like patchRoom, but rethrows so the Edit modal can stay open and alert
+  // (and only close on success) — same contract as addRoom/importRooms.
+  const editRoom = useCallback(
+    async (id: number, patch: Record<string, unknown>) => {
+      await roomApi.patchRoom(id, patch);
+      await load();
+    },
+    [load],
+  );
+
   const deleteRoom = useCallback(
     async (id: number) => {
       try {
@@ -63,5 +74,5 @@ export function useRooms() {
     [load],
   );
 
-  return { rooms, addRoom, patchRoom, deleteRoom, importRooms };
+  return { rooms, addRoom, patchRoom, editRoom, deleteRoom, importRooms };
 }

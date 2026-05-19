@@ -6,12 +6,13 @@ import {
   fmt,
   isOverdue,
 } from '../utils';
-import { AlertIcon, LinkIcon, TrashIcon } from '../icons';
+import { AlertIcon, EditIcon, LinkIcon, TrashIcon } from '../icons';
 
 interface Props {
   rooms: Room[]; // already filtered/searched
   onToggleDone: (r: Room) => void;
   onCycleStatus: (r: Room) => void;
+  onEdit: (r: Room) => void;
   onDelete: (r: Room) => void;
 }
 
@@ -19,6 +20,7 @@ export default function RoomTable({
   rooms,
   onToggleDone,
   onCycleStatus,
+  onEdit,
   onDelete,
 }: Props) {
   return (
@@ -34,7 +36,7 @@ export default function RoomTable({
             <th>Deadline</th>
             <th>Completed</th>
             <th>Status</th>
-            <th style={{ width: 32 }} />
+            <th style={{ width: 72 }} />
           </tr>
         </thead>
         <tbody>
@@ -108,13 +110,22 @@ export default function RoomTable({
                   </span>
                 </td>
                 <td>
-                  <button
-                    className="delete-btn"
-                    title="Remove room"
-                    onClick={() => onDelete(r)}
-                  >
-                    <TrashIcon />
-                  </button>
+                  <div className="row-actions">
+                    <button
+                      className="edit-btn"
+                      title="Edit room"
+                      onClick={() => onEdit(r)}
+                    >
+                      <EditIcon />
+                    </button>
+                    <button
+                      className="delete-btn"
+                      title="Remove room"
+                      onClick={() => onDelete(r)}
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
                 </td>
               </tr>
             );

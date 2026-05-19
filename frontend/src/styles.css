@@ -87,13 +87,24 @@ input:focus, select:focus { outline: 1.5px solid #3b6d11; outline-offset: -0.5px
 .filter-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
 .search { min-width: 220px; }
 
-.delete-btn { background: none; border: none; color: var(--color-text-secondary); cursor: pointer; padding: 4px 6px; border-radius: 4px; display: inline-flex; }
-.delete-btn .ic { width: 15px; height: 15px; }
+.row-actions { display: flex; gap: 2px; }
+.delete-btn, .edit-btn { background: none; border: none; color: var(--color-text-secondary); cursor: pointer; padding: 4px 6px; border-radius: 4px; display: inline-flex; }
+.delete-btn .ic, .edit-btn .ic { width: 15px; height: 15px; }
 .delete-btn:hover { color: #a32d2d; background: #fcebeb; }
+.edit-btn:hover { color: #3b6d11; background: var(--color-background-secondary); }
 .overdue-hint { color: #a32d2d; display: inline-flex; }
 .overdue-hint .ic { width: 13px; height: 13px; }
 .status-badge { cursor: pointer; }
 .empty-state { text-align: center; color: var(--color-text-secondary); font-size: 13px; padding: 2rem 0; }
+
+.modal-overlay { position: fixed; inset: 0; background: rgba(31, 30, 27, 0.45); display: flex; align-items: center; justify-content: center; padding: 1rem; z-index: 50; }
+.modal { background: var(--color-background-primary); border: 0.5px solid var(--color-border-secondary); border-radius: var(--border-radius-lg); padding: 1.25rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); }
+.modal-header { font-size: 15px; font-weight: 600; margin-bottom: 1rem; }
+.edit-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 8px; }
+.edit-form label { font-size: 11px; color: var(--color-text-secondary); display: block; margin-bottom: 3px; }
+.edit-form input, .edit-form select { width: 100%; }
+.edit-form .full { grid-column: 1 / -1; }
+.modal-actions { grid-column: 1 / -1; display: flex; justify-content: flex-end; gap: 8px; margin-top: 0.5rem; }
 
 @media (max-width: 820px) {
   .metrics { grid-template-columns: repeat(2, 1fr); }

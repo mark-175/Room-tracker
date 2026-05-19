@@ -43,3 +43,9 @@ export const TrashIcon = () => (
     <path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13" />
   </svg>
 );
+
+export const EditIcon = () => (
+  <svg {...svgProps}>
+    <path d="M4 20h4L18.5 9.5a2.12 2.12 0 0 0-3-3L5 17v3zM13.5 6.5l3 3" />
+  </svg>
+);

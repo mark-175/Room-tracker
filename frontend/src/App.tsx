@@ -8,13 +8,16 @@ import CompletionChart from './components/CompletionChart';
 import AddForm from './components/AddForm';
 import Toolbar from './components/Toolbar';
 import RoomTable from './components/RoomTable';
+import EditModal from './components/EditModal';
 
 const CYCLE: Status[] = ['To Do', 'In Progress', 'Done'];
 
 export default function App() {
-  const { rooms, addRoom, patchRoom, deleteRoom, importRooms } = useRooms();
+  const { rooms, addRoom, patchRoom, editRoom, deleteRoom, importRooms } =
+    useRooms();
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
+  const [editing, setEditing] = useState<Room | null>(null);
 
   const visible = useMemo(
     () =>
@@ -64,8 +67,17 @@ export default function App() {
         rooms={visible}
         onToggleDone={toggleDone}
         onCycleStatus={cycleStatus}
+        onEdit={setEditing}
         onDelete={removeRoom}
       />
+
+      {editing && (
+        <EditModal
+          room={editing}
+          onSave={editRoom}
+          onClose={() => setEditing(null)}
+        />
+      )}
     </div>
   );
 }

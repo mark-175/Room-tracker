@@ -1,13 +1,8 @@
 import { useRef, useState } from 'react';
 import type { Difficulty, NewRoom } from '../types';
 import { getRoomInfo } from '../api';
+import { CATEGORIES, DIFFICULTIES } from '../constants';
 import { PlusIcon } from '../icons';
-
-const CATEGORIES = [
-  'Fundamentals', 'Web', 'Network', 'Crypto', 'Forensics',
-  'Malware', 'Red Team', 'Blue Team', 'CTF', 'Other',
-];
-const DIFFICULTIES: Difficulty[] = ['Easy', 'Medium', 'Hard'];
 
 const THM_ROOM_RE = /tryhackme\.com\/(?:room|r)\/[A-Za-z0-9_-]+/i;
 

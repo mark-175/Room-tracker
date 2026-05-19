@@ -40,7 +40,8 @@
       "Bash(curl -s -w ' [%{http_code}]\\\\n' http://localhost:3199/api/room-info?url=__CMDSUB_OUTPUT__)",
       "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('tryhackme.com/room/owasptop10/?foo=1'\\)\\)\")",
       "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://tryhackme.com/room/zzzznotarealzzz'\\)\\)\")",
-      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://example.com/room/x'\\)\\)\")"
+      "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://example.com/room/x'\\)\\)\")",
+      "Bash(python *)"
     ]
   }
 }

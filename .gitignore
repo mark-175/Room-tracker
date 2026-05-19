@@ -1,5 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node (legacy; backend was ported to FastAPI)
 node_modules/
+
+# Local SQLite database (your data) + WAL sidecar files
 rooms.db
 rooms.db-shm
 rooms.db-wal
+
 *.log

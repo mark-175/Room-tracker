@@ -1,0 +1,4 @@
+# Python deps for the FastAPI server. SQLite is in the stdlib (sqlite3),
+# so there is no native build step. Install with: pip install -r requirements.txt
+fastapi>=0.110
+uvicorn[standard]>=0.29

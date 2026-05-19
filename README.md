@@ -6,20 +6,21 @@ works offline.
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) 18 or newer (tested on Node 22).
+- [Python](https://www.python.org/) 3.10 or newer (tested on Python 3.13).
 
 ## Setup & run
 
 ```sh
-npm install
-npm start
+pip install -r requirements.txt
+python main.py
 ```
 
-Then open **http://localhost:3000** in your browser. Run `npm start` again any
-time you want to use it — your rooms are saved in `rooms.db` and will still be
-there.
+Then open **http://localhost:3000** in your browser. Run `python main.py` again
+any time you want to use it — your rooms are saved in `rooms.db` and will still
+be there.
 
-To use a different port: `PORT=8080 npm start` (PowerShell: `$env:PORT=8080; npm start`).
+To use a different port: `PORT=8080 python main.py` (PowerShell:
+`$env:PORT=8080; python main.py`).
 
 ## What you can track
 
@@ -50,4 +51,4 @@ data otherwise.
 - On first run the app is pre-filled with 10 example rooms so the dashboard
   isn't empty. Delete them and add your own — the examples won't come back.
 - `thm_room_tracker.html` is the original single-file prototype, kept for
-  reference only. The app you run is in `server.js` + `public/`.
+  reference only. The app you run is in `main.py` + `db.py` + `public/`.

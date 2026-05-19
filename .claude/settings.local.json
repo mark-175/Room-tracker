@@ -19,7 +19,13 @@
       "Bash(curl -s -X POST http://localhost:3000/api/import -H \"Content-Type: application/json\" -d @backup.json)",
       "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>console.log\\('after import rooms:',JSON.parse\\(d\\).length\\)\\)\")",
       "Bash(curl -s -X POST http://localhost:3000/api/import -H \"Content-Type: application/json\" -d '{\"rooms\":\"nope\"}')",
-      "Bash(taskkill //F //IM node.exe)"
+      "Bash(taskkill //F //IM node.exe)",
+      "PowerShell(py *)",
+      "PowerShell(Get-Process *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(pip install *)",
+      "PowerShell(cd \"C:\\\\Personal Projects\\\\Room tracker\"; python -c \"import db; rs = db.list_rooms\\(\\); print\\('rooms:', len\\(rs\\)\\); print\\(rs[0] if rs else 'empty'\\)\"; \"exit: $LASTEXITCODE\")",
+      "PowerShell(cd \"C:\\\\Personal Projects\\\\Room tracker\"; $env:PORT=3000; python main.py)"
     ]
   }
 }

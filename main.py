@@ -2,9 +2,10 @@
 API backed by db.py. Run with ``python main.py`` (or
 ``uvicorn main:app --port 3000``), then open http://localhost:3000.
 
-This replaces the original Node/Express server.js. The /api contract,
-camelCase request/response bodies, and status codes are identical, so the
-unchanged frontend in public/ keeps working without modification.
+The /api contract, camelCase request/response bodies, and status codes are
+unchanged from the original Node/Express server; this serves the built
+React + TypeScript single-page app from frontend/dist (Vite build output)
+instead of the old vanilla-JS public/ directory.
 """
 
 import json
@@ -18,7 +19,11 @@ from fastapi.staticfiles import StaticFiles
 import db
 import thm
 
-PUBLIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public")
+# The built React app (Vite output). Created by:
+#   cd frontend && npm install && npm run build
+FRONTEND_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "frontend", "dist"
+)
 
 app = FastAPI(title="THM Room Tracker")
 
@@ -114,9 +119,25 @@ def room_info(url: str = ""):
     return thm.fetch_room_info(url)
 
 
-# Serve the frontend. Mounted last so the /api routes above take precedence;
-# html=True serves index.html at "/".
-app.mount("/", StaticFiles(directory=PUBLIC_DIR, html=True), name="static")
+# Serve the built React app. Mounted last so the /api routes above take
+# precedence; html=True serves index.html at "/". If the frontend hasn't been
+# built yet, fail soft with a clear hint instead of crashing at startup
+# (StaticFiles raises if the directory is missing).
+if os.path.isdir(FRONTEND_DIR):
+    app.mount(
+        "/", StaticFiles(directory=FRONTEND_DIR, html=True), name="static"
+    )
+else:
+
+    @app.get("/")
+    async def _frontend_not_built():
+        return JSONResponse(
+            status_code=503,
+            content={
+                "error": "Frontend not built. Run: "
+                "cd frontend && npm install && npm run build"
+            },
+        )
 
 
 if __name__ == "__main__":

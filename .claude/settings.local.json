@@ -41,7 +41,24 @@
       "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('tryhackme.com/room/owasptop10/?foo=1'\\)\\)\")",
       "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://tryhackme.com/room/zzzznotarealzzz'\\)\\)\")",
       "Bash(python -c \"import urllib.parse;print\\(urllib.parse.quote\\('https://example.com/room/x'\\)\\)\")",
-      "Bash(python *)"
+      "Bash(python *)",
+      "Bash(npx *)",
+      "Bash(cmd /c \"type frontend\\\\package.json\")",
+      "Bash(cmd /c \"dir /b /s frontend\\\\src frontend\\\\*.* 2>nul\")",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:3000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://localhost:3000/$\\(curl -s http://localhost:3000/)",
+      "Bash(curl -s -X POST http://localhost:3000/api/rooms -H \"Content-Type: application/json\" -d '{\"name\":\"Smoke Test\",\"difficulty\":\"Hard\",\"tags\":\"a, b\",\"status\":\"Done\"}')",
+      "Bash(curl -s -o /tmp/e.json -w \"%{http_code}\" -X POST http://localhost:3000/api/rooms -H \"Content-Type: application/json\" -d '{}')",
+      "Read(//tmp/**)",
+      "Bash(curl -s -X PATCH http://localhost:3000/api/rooms/11 -H \"Content-Type: application/json\" -d '{\"status\":\"In Progress\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -X DELETE http://localhost:3000/api/rooms/11)",
+      "Bash(curl -s -X DELETE http://localhost:3000/api/rooms/999)",
+      "Bash(curl -s -D - -o /dev/null \"http://localhost:3000/api/export\")",
+      "Bash(curl -s \"http://localhost:3000/api/room-info?url=notathmurl\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/some/spa/route)",
+      "Bash(taskkill //F //IM python.exe)",
+      "Bash(git check-ignore *)"
     ]
   }
 }

@@ -7,10 +7,19 @@ works offline.
 ## Requirements
 
 - [Python](https://www.python.org/) 3.10 or newer (tested on Python 3.13).
+- [Node.js](https://nodejs.org/) 18 or newer — only to build the React
+  frontend; not needed to run the server afterwards.
 
 ## Setup & run
 
 ```sh
+# 1. Build the frontend (one-time, and again after any frontend change)
+cd frontend
+npm install
+npm run build
+cd ..
+
+# 2. Install backend deps and run the server
 pip install -r requirements.txt
 python main.py
 ```
@@ -51,4 +60,5 @@ data otherwise.
 - On first run the app is pre-filled with 10 example rooms so the dashboard
   isn't empty. Delete them and add your own — the examples won't come back.
 - `thm_room_tracker.html` is the original single-file prototype, kept for
-  reference only. The app you run is in `main.py` + `db.py` + `public/`.
+  reference only. The app you run is the FastAPI server (`main.py` + `db.py` +
+  `thm.py`) serving the built React app from `frontend/dist/`.

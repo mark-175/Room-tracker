@@ -5,13 +5,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Overview
 
 A local TryHackMe ("THM") room tracker: a small Python + FastAPI server backed
-by a SQLite file, serving a vanilla-JS frontend. Track rooms you want to finish
-(name, URL, category, difficulty, deadline, tags, status) with data persisted
-locally to `rooms.db`.
+by a SQLite file, serving a React + TypeScript single-page app (built with
+Vite). Track rooms you want to finish (name, URL, category, difficulty,
+deadline, tags, status) with data persisted locally to `rooms.db`.
 
 The server was ported from an earlier Node/Express implementation; the
-`rooms.db` schema, the `/api` contract, and the frontend in `public/` are
-unchanged from that version (a DB created by the old server still works).
+`rooms.db` schema and the `/api` contract are unchanged from that version (a DB
+created by the old server still works). The frontend was rewritten from the
+original vanilla JS into a React + TypeScript app under `frontend/`; Vite
+builds it to `frontend/dist/`, which FastAPI serves. The `/api` request/
+response shapes were kept identical so only the client implementation changed.
 
 `thm_room_tracker.html` at the repo root is the **original single-file
 prototype**, kept only for reference. It is superseded by the app and is *not*
@@ -20,15 +23,25 @@ served or used at runtime — do not edit it expecting changes to appear.
 ## Commands
 
 ```sh
+# Frontend: build once, and again after any change under frontend/src
+cd frontend && npm install && npm run build && cd ..
+
+# Backend
 pip install -r requirements.txt   # one-time; sqlite3 is stdlib (no native build)
 python main.py                    # serves http://localhost:3000  (PORT env var overrides)
 ```
 
 `python main.py` runs uvicorn directly; you can also use
-`uvicorn main:app --port 3000` (add `--reload` while developing). There is no
-build step, no linter, and no test suite. Verify changes by running the server
-and exercising the UI or `curl`-ing `/api/*`. The DB path can be overridden
-with the `DB_PATH` env var (useful for a throwaway test DB).
+`uvicorn main:app --port 3000` (add `--reload` while developing). `main.py`
+serves the prebuilt `frontend/dist/`; if it is missing it fails soft with a
+503 + a "build the frontend" hint instead of crashing.
+
+While developing the UI, run `python main.py` *and*, in `frontend/`,
+`npm run dev` — Vite serves the app on :5173 and proxies `/api` to FastAPI on
+:3000 (hot reload, no rebuild). `npm run build` runs `tsc` first, so the build
+fails on a type error; there is no separate linter or test suite. Otherwise
+verify changes by exercising the UI or `curl`-ing `/api/*`. The DB path can be
+overridden with the `DB_PATH` env var (useful for a throwaway test DB).
 
 ## Architecture
 
@@ -57,9 +70,14 @@ Three core layers plus one network helper, each one file/area:
   the only fields THM exposes unauthenticated (tags come back as opaque IDs and
   category not at all, so they stay manual). It raises `db.HttpError` so
   main.py's existing handler returns the same `{"error": "..."}` shape.
-- **`public/`** — `index.html` + `styles.css` + `app.js`, plus
-  `vendor/chart.umd.js` (Chart.js vendored locally so the app works offline;
-  do not switch it back to a CDN `<script>`).
+- **`frontend/`** — the React + TypeScript single-page app (Vite). Source
+  under `frontend/src/`: `App.tsx` composes the `components/`, `hooks/
+  useRooms.ts` owns the `rooms` array + all API mutations, `api.ts` is the
+  typed fetch client, `utils.ts` the derived helpers, `types.ts` the API
+  shapes, `styles.css` the ported theme (class names unchanged). Chart.js
+  comes from npm via `react-chartjs-2` and is bundled by Vite, so the app
+  still works fully offline — do not switch it to a CDN. `npm run build`
+  emits `frontend/dist/` (gitignored), which `main.py` serves.
 
 The whole app works offline **except** the room-URL lookup (`thm.py` /
 `GET /api/room-info` / the Add-form auto-fill), which needs internet to reach
@@ -69,13 +87,14 @@ tryhackme.com; it fails soft (an inline hint, never blocks adding a room).
 
 1. **"Overdue" is derived, never stored.** The DB only ever holds the three
    real statuses `'To Do' | 'In Progress' | 'Done'`. `isOverdue()` /
-   `effectiveStatus()` in `app.js` compute the virtual "Overdue" state from
-   `deadline` vs. today for display and filtering.
-2. **One `render()` rebuilds everything from state.** `app.js` keeps a single
-   `rooms` array loaded from the API; every mutation calls the API, then
-   `loadRooms()` re-fetches and calls `render()`, which fully rebuilds metrics,
-   progress bar, table (`innerHTML`), and chart. The chart is destroyed and
-   recreated each render. The DB — not client memory — is the source of truth.
+   `effectiveStatus()` in `frontend/src/utils.ts` compute the virtual
+   "Overdue" state from `deadline` vs. today for display and filtering.
+2. **The DB is the single source of truth — no optimistic updates.**
+   `useRooms` holds one `rooms` array; every mutation calls the API and then
+   re-fetches the whole list before React re-renders (the old
+   `loadRooms()`/`render()` pattern). Components are pure functions of that
+   array; metrics, progress bar, table and chart all derive from it each
+   render. Never mutate `rooms` locally to "save a round-trip".
 
 **API contract (`/api`):** `GET /rooms`, `POST /rooms`, `PATCH /rooms/:id`
 (partial), `DELETE /rooms/:id`, `GET /export` (downloads a JSON backup),
@@ -90,8 +109,11 @@ comma-separated `tags` text column.
 stamps it with today's date the first time a room becomes `Done` and clears it
 whenever the room leaves `Done`. Clients never send it on normal updates.
 
-**Frontend events are delegated.** Because the table is re-rendered on every
-change, `app.js` attaches listeners to stable parents (`#room-tbody`,
-`#filter-row`) and dispatches via `js-*` classes / `data-id`, rather than the
-prototype's inline `onclick`. Keep new row controls within this delegation
-scheme.
+**Adding to the frontend.** Put new UI in a `components/` component and feed
+it from `App.tsx`; reach the server only through `api.ts` (so the
+`{"error": "..."}` handling stays in one place) and trigger mutations via the
+`useRooms` callbacks so the re-fetch invariant holds. Keep derived/display
+logic in `utils.ts`. The error UX is intentionally the prototype's
+`alert()`/`confirm()` — match it for new actions unless deliberately changing
+it. `filter`/`search` are local UI state in `App.tsx` (not server state) and
+just narrow the rendered list.

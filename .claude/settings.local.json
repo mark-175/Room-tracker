@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm --version)",
+      "Bash(node -e \"console.log\\('sqlite builtin:', !!require\\('node:sqlite'\\)\\)\")",
+      "Bash(curl -sI -m 10 https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js)",
+      "Bash(curl -sL -m 30 -o \"C:\\\\Personal Projects\\\\Room tracker\\\\public\\\\vendor\\\\chart.umd.js\" https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js)",
+      "Bash(npm install *)",
+      "Bash(curl -s http://localhost:3000/api/rooms)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const a=JSON.parse\\(d\\);console.log\\('rooms:',a.length\\);console.log\\(JSON.stringify\\(a[0]\\)\\);}\\)\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/rooms -H \"Content-Type: application/json\" -d '{\"name\":\"Test Room\",\"category\":\"CTF\",\"difficulty\":\"Hard\",\"deadline\":\"2026-12-31\",\"tags\":\"smoke, test\",\"url\":\"https://tryhackme.com/room/test\"}')",
+      "Bash(curl -s -X PATCH http://localhost:3000/api/rooms/11 -H \"Content-Type: application/json\" -d '{\"status\":\"Done\"}')",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" -X DELETE http://localhost:3000/api/rooms/11)",
+      "Bash(curl -s http://localhost:3000/api/export)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>{const o=JSON.parse\\(d\\);console.log\\('app:',o.app,'version:',o.version,'rooms:',o.rooms.length\\)}\\)\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/)",
+      "Bash(curl -s -X POST http://localhost:3000/api/rooms -H \"Content-Type: application/json\" -d '{\"category\":\"Web\"}')",
+      "Bash(curl -s http://localhost:3000/api/export -o backup.json)",
+      "Bash(curl -s -X POST http://localhost:3000/api/import -H \"Content-Type: application/json\" -d @backup.json)",
+      "Bash(node -e \"let d='';process.stdin.on\\('data',c=>d+=c\\).on\\('end',\\(\\)=>console.log\\('after import rooms:',JSON.parse\\(d\\).length\\)\\)\")",
+      "Bash(curl -s -X POST http://localhost:3000/api/import -H \"Content-Type: application/json\" -d '{\"rooms\":\"nope\"}')",
+      "Bash(taskkill //F //IM node.exe)"
+    ]
+  }
+}

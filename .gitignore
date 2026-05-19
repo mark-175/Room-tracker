@@ -1,0 +1,5 @@
+node_modules/
+rooms.db
+rooms.db-shm
+rooms.db-wal
+*.log

@@ -1,0 +1,17 @@
+{
+  "name": "thm-room-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local TryHackMe room tracker — Node + Express + SQLite",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "better-sqlite3": "^11.8.1",
+    "express": "^4.21.2"
+  }
+}

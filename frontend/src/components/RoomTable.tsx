@@ -1,4 +1,4 @@
-import type { Room } from '../types';
+import type { Room, SortDir } from '../types';
 import {
   badgeDiff,
   badgeStatus,
@@ -9,7 +9,9 @@ import {
 import { AlertIcon, EditIcon, LinkIcon, TrashIcon } from '../icons';
 
 interface Props {
-  rooms: Room[]; // already filtered/searched
+  rooms: Room[]; // already filtered/searched/sorted
+  deadlineSort: SortDir | null;
+  onSortDeadline: () => void;
   onToggleDone: (r: Room) => void;
   onCycleStatus: (r: Room) => void;
   onEdit: (r: Room) => void;
@@ -18,6 +20,8 @@ interface Props {
 
 export default function RoomTable({
   rooms,
+  deadlineSort,
+  onSortDeadline,
   onToggleDone,
   onCycleStatus,
   onEdit,
@@ -33,7 +37,20 @@ export default function RoomTable({
             <th>Category</th>
             <th>Difficulty</th>
             <th>Tags</th>
-            <th>Deadline</th>
+            <th
+              className={'sortable' + (deadlineSort ? ' sorted' : '')}
+              onClick={onSortDeadline}
+              title="Sort by deadline"
+            >
+              Deadline
+              <span className="sort-arrow">
+                {deadlineSort === 'asc'
+                  ? '▲'
+                  : deadlineSort === 'desc'
+                    ? '▼'
+                    : '↕'}
+              </span>
+            </th>
             <th>Completed</th>
             <th>Status</th>
             <th style={{ width: 72 }} />

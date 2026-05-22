@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
-import type { DatePeriod, Filter, Room, Status } from './types';
-import { effectiveStatus, matchesPeriod, matchesSearch } from './utils';
+import type { DatePeriod, Filter, Room, SortDir, Status } from './types';
+import {
+  effectiveStatus,
+  matchesPeriod,
+  matchesSearch,
+  sortByDeadline,
+} from './utils';
 import { useRooms } from './hooks/useRooms';
 import Header from './components/Header';
 import Metrics from './components/Metrics';
@@ -20,18 +25,22 @@ export default function App() {
   const [period, setPeriod] = useState<DatePeriod>('all');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [deadlineSort, setDeadlineSort] = useState<SortDir | null>(null);
   const [editing, setEditing] = useState<Room | null>(null);
 
-  const visible = useMemo(
-    () =>
-      rooms.filter(
-        (r) =>
-          (filter === 'all' || effectiveStatus(r) === filter) &&
-          matchesPeriod(r, period, from, to) &&
-          matchesSearch(r, search),
-      ),
-    [rooms, filter, period, from, to, search],
-  );
+  const visible = useMemo(() => {
+    const filtered = rooms.filter(
+      (r) =>
+        (filter === 'all' || effectiveStatus(r) === filter) &&
+        matchesPeriod(r, period, from, to) &&
+        matchesSearch(r, search),
+    );
+    return deadlineSort ? sortByDeadline(filtered, deadlineSort) : filtered;
+  }, [rooms, filter, period, from, to, search, deadlineSort]);
+
+  // Cycle the deadline sort: unsorted → ascending → descending → unsorted.
+  const cycleDeadlineSort = () =>
+    setDeadlineSort((d) => (d === null ? 'asc' : d === 'asc' ? 'desc' : null));
 
   const toggleDone = (r: Room) =>
     void patchRoom(r.id, { status: r.status === 'Done' ? 'To Do' : 'Done' });
@@ -75,6 +84,8 @@ export default function App() {
       />
       <RoomTable
         rooms={visible}
+        deadlineSort={deadlineSort}
+        onSortDeadline={cycleDeadlineSort}
         onToggleDone={toggleDone}
         onCycleStatus={cycleStatus}
         onEdit={setEditing}

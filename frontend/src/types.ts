@@ -16,6 +16,10 @@ export type Filter = 'all' | EffectiveStatus;
 // period other than 'all' is active.
 export type DatePeriod = 'all' | 'today' | 'custom';
 
+// Deadline sort direction (local UI state only — see App.tsx / RoomTable).
+// `null` means unsorted (the list keeps its server order).
+export type SortDir = 'asc' | 'desc';
+
 export interface Room {
   id: number;
   name: string;

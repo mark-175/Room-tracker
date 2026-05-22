@@ -1,4 +1,4 @@
-import type { DatePeriod, EffectiveStatus, Room } from './types';
+import type { DatePeriod, EffectiveStatus, Room, SortDir } from './types';
 
 function today(): string {
   return new Date().toISOString().slice(0, 10);
@@ -64,6 +64,20 @@ function matchesPeriod(
   return true;
 }
 
+// Return a copy of `rooms` sorted by `deadline` in the given direction.
+// Rooms with no deadline always sink to the bottom, regardless of direction.
+// 'YYYY-MM-DD' strings compare chronologically as plain strings.
+function sortByDeadline(rooms: Room[], dir: SortDir): Room[] {
+  return [...rooms].sort((a, b) => {
+    if (!a.deadline && !b.deadline) return 0;
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    if (a.deadline === b.deadline) return 0;
+    const cmp = a.deadline < b.deadline ? -1 : 1;
+    return dir === 'asc' ? cmp : -cmp;
+  });
+}
+
 export {
   isOverdue,
   effectiveStatus,
@@ -72,4 +86,5 @@ export {
   fmt,
   matchesSearch,
   matchesPeriod,
+  sortByDeadline,
 };

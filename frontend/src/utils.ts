@@ -1,11 +1,15 @@
-import type { EffectiveStatus, Room } from './types';
+import type { DatePeriod, EffectiveStatus, Room } from './types';
+
+function today(): string {
+  return new Date().toISOString().slice(0, 10);
+}
 
 // --- Invariant: "Overdue" is derived here, never stored. -------------------
 // A non-Done room past its deadline is "Overdue" for display/filtering only;
 // the DB still holds its real status. Mirrors the old app.js logic exactly.
 function isOverdue(r: Room): boolean {
   if (r.status === 'Done' || !r.deadline) return false;
-  return new Date(r.deadline) < new Date(new Date().toISOString().slice(0, 10));
+  return r.deadline < today(); // 'YYYY-MM-DD' strings sort chronologically
 }
 
 function effectiveStatus(r: Room): EffectiveStatus {
@@ -42,6 +46,24 @@ function matchesSearch(r: Room, search: string): boolean {
   );
 }
 
+// Time-period filter on a room's `deadline` (see DatePeriod). 'YYYY-MM-DD'
+// strings sort chronologically, so range checks are plain string compares.
+// `from`/`to` are inclusive and each optional; rooms without a deadline drop
+// out once a period other than 'all' is active.
+function matchesPeriod(
+  r: Room,
+  period: DatePeriod,
+  from: string,
+  to: string,
+): boolean {
+  if (period === 'all') return true;
+  if (!r.deadline) return false;
+  if (period === 'today') return r.deadline === today();
+  if (from && r.deadline < from) return false;
+  if (to && r.deadline > to) return false;
+  return true;
+}
+
 export {
   isOverdue,
   effectiveStatus,
@@ -49,4 +71,5 @@ export {
   badgeDiff,
   fmt,
   matchesSearch,
+  matchesPeriod,
 };

@@ -86,6 +86,7 @@ input:focus, select:focus { outline: 1.5px solid #3b6d11; outline-offset: -0.5px
 .filter-btn { font-size: 12px; border: 0.5px solid var(--color-border-tertiary); background: transparent; color: var(--color-text-secondary); border-radius: 20px; padding: 3px 12px; cursor: pointer; }
 .filter-btn.active { background: var(--color-text-primary); color: var(--color-background-primary); border-color: var(--color-text-primary); }
 .search { min-width: 220px; }
+.date-range { display: flex; align-items: center; gap: 6px; }
 
 .row-actions { display: flex; gap: 2px; }
 .delete-btn, .edit-btn { background: none; border: none; color: var(--color-text-secondary); cursor: pointer; padding: 4px 6px; border-radius: 4px; display: inline-flex; }

@@ -10,6 +10,12 @@ export type Difficulty = 'Easy' | 'Medium' | 'Hard';
 export type EffectiveStatus = Status | 'Overdue';
 export type Filter = 'all' | EffectiveStatus;
 
+// Time-period filter, applied to a room's `deadline` (local UI state only,
+// combined AND with `Filter` and the search box — see App.tsx). 'custom' uses
+// the inclusive `from`/`to` range; rooms with no deadline are excluded once a
+// period other than 'all' is active.
+export type DatePeriod = 'all' | 'today' | 'custom';
+
 export interface Room {
   id: number;
   name: string;

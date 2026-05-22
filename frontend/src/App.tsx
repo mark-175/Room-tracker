@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
-import type { Filter, Room, Status } from './types';
-import { effectiveStatus, matchesSearch } from './utils';
+import type { DatePeriod, Filter, Room, Status } from './types';
+import { effectiveStatus, matchesPeriod, matchesSearch } from './utils';
 import { useRooms } from './hooks/useRooms';
 import Header from './components/Header';
 import Metrics from './components/Metrics';
@@ -17,6 +17,9 @@ export default function App() {
     useRooms();
   const [filter, setFilter] = useState<Filter>('all');
   const [search, setSearch] = useState('');
+  const [period, setPeriod] = useState<DatePeriod>('all');
+  const [from, setFrom] = useState('');
+  const [to, setTo] = useState('');
   const [editing, setEditing] = useState<Room | null>(null);
 
   const visible = useMemo(
@@ -24,9 +27,10 @@ export default function App() {
       rooms.filter(
         (r) =>
           (filter === 'all' || effectiveStatus(r) === filter) &&
+          matchesPeriod(r, period, from, to) &&
           matchesSearch(r, search),
       ),
-    [rooms, filter, search],
+    [rooms, filter, period, from, to, search],
   );
 
   const toggleDone = (r: Room) =>
@@ -60,8 +64,14 @@ export default function App() {
       <Toolbar
         filter={filter}
         search={search}
+        period={period}
+        from={from}
+        to={to}
         onFilter={setFilter}
         onSearch={setSearch}
+        onPeriod={setPeriod}
+        onFrom={setFrom}
+        onTo={setTo}
       />
       <RoomTable
         rooms={visible}

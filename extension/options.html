@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>THM Room Tracker — Options</title>
+    <style>
+      body {
+        font-family: -apple-system, Segoe UI, Helvetica, Arial, sans-serif;
+        max-width: 540px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        color: #1e293b;
+      }
+      h1 { font-size: 1.25rem; margin-bottom: 1rem; }
+      label { display: block; margin-bottom: 0.25rem; font-weight: 600; }
+      input[type="url"] {
+        width: 100%;
+        padding: 0.5rem 0.6rem;
+        font-size: 1rem;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        box-sizing: border-box;
+      }
+      .row { margin-top: 1rem; display: flex; gap: 0.5rem; align-items: center; }
+      button {
+        padding: 0.5rem 1rem;
+        border: 0;
+        border-radius: 6px;
+        background: #1e293b;
+        color: #f8fafc;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover { background: #0f172a; }
+      .hint { color: #64748b; font-size: 0.85rem; margin-top: 0.5rem; }
+      .status { font-size: 0.9rem; }
+      .status.ok { color: #047857; }
+      .status.err { color: #b91c1c; }
+    </style>
+  </head>
+  <body>
+    <h1>THM Room Tracker — Options</h1>
+    <label for="serverBaseUrl">Tracker server URL</label>
+    <input
+      id="serverBaseUrl"
+      type="url"
+      placeholder="http://localhost:3000"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <p class="hint">
+      Origin only (no path). Example: <code>http://localhost:3000</code> or
+      <code>http://192.168.1.20:3000</code>.
+    </p>
+    <div class="row">
+      <button id="save" type="button">Save</button>
+      <span id="status" class="status"></span>
+    </div>
+    <script src="options.js"></script>
+  </body>
+</html>

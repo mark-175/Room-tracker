@@ -108,7 +108,7 @@ async function handleAddClick(tab) {
     try {
       const resp = await fetch(`${base}/api/rooms`, { method: "GET" });
       if (!resp.ok) {
-        await notify(`Add failed: ${await readErrorMessage(resp)}`);
+        await notify(`Couldn't check tracker: ${await readErrorMessage(resp)}`);
         return;
       }
       rooms = await resp.json();
@@ -171,6 +171,8 @@ async function handleAddClick(tab) {
 
     const diff = created.difficulty || info.difficulty || "";
     await notify(diff ? `Added: ${created.name} (${diff})` : `Added: ${created.name}`);
+  } catch (_) {
+    await notify("Unexpected error — check the background page console for details.");
   } finally {
     inFlight.delete(tab.id);
   }

@@ -117,3 +117,9 @@ logic in `utils.ts`. The error UX is intentionally the prototype's
 `alert()`/`confirm()` — match it for new actions unless deliberately changing
 it. `filter`/`search` are local UI state in `App.tsx` (not server state) and
 just narrow the rendered list.
+
+## Firefox extension
+
+`extension/` is a Manifest V3 Firefox add-on that adds a toolbar button to one-click add the current TryHackMe room page to the tracker. It calls the existing `/api/room-info` + `/api/rooms` endpoints; the backend and frontend are unchanged. The toolbar button is enabled only on `tryhackme.com/room/<code>` (and the short `/r/<code>` form); clicking it does a duplicate check, enriches the URL with name+difficulty from THM, posts the new row, and shows a native OS notification with the result. The options page lets you point the extension at a different server URL (default `http://localhost:3000`), persisted in `browser.storage.local`.
+
+Load it as a temporary add-on while developing: open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `extension/manifest.json`. The add-on is unloaded on Firefox restart — there is no signing/AMO step. If you change the server URL to a host not listed in `host_permissions` (e.g. a LAN IP outside `localhost`/`127.0.0.1`), edit `extension/manifest.json` to add the host and reload the extension.

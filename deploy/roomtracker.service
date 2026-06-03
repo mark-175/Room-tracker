@@ -1,0 +1,29 @@
+# systemd unit for the THM Room Tracker.
+#
+# Install (on the VPS), assuming the repo lives at /opt/roomtracker and runs
+# as the service user `roomtracker` (edit both below to match your setup):
+#
+#   sudo cp /opt/roomtracker/deploy/roomtracker.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now roomtracker
+#   systemctl status roomtracker
+#
+# The app binds 127.0.0.1:3000 (see main.py); it is exposed to your devices by
+# `tailscale serve` (see deploy/DEPLOY.md), never to the public internet.
+[Unit]
+Description=THM Room Tracker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=roomtracker
+Group=roomtracker
+WorkingDirectory=/opt/roomtracker
+Environment=PORT=3000
+ExecStart=/opt/roomtracker/.venv/bin/python /opt/roomtracker/main.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

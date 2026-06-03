@@ -123,3 +123,16 @@ just narrow the rendered list.
 `extension/` is a Manifest V3 Firefox add-on that adds a toolbar button to one-click add the current TryHackMe room page to the tracker. It calls the existing `/api/room-info` + `/api/rooms` endpoints; the backend and frontend are unchanged. The toolbar button is enabled only on `tryhackme.com/room/<code>` (and the short `/r/<code>` form); clicking it does a duplicate check, enriches the URL with name+difficulty from THM, posts the new row, and shows a native OS notification with the result. The options page lets you point the extension at a different server URL (default `http://localhost:3000`), persisted in `browser.storage.local`.
 
 Load it as a temporary add-on while developing: open `about:debugging#/runtime/this-firefox`, click **Load Temporary Add-on…**, and select `extension/manifest.json`. The add-on is unloaded on Firefox restart — there is no signing/AMO step. If you change the server URL to a host not listed in `host_permissions` (e.g. a LAN IP outside `localhost`/`127.0.0.1`), edit `extension/manifest.json` to add the host and reload the extension.
+
+## Deployment
+
+The app is designed to run on a single-user Ubuntu VPS reachable **only from the
+owner's own devices** via Tailscale — there is no in-app authentication. The app
+keeps binding to `127.0.0.1:3000`; `tailscale serve` fronts it with HTTPS on the
+tailnet, and a `systemd` unit (`deploy/roomtracker.service`) runs it on boot with
+`WorkingDirectory` set so `rooms.db` stays in the app directory. The public
+internet is never exposed (ufw allows SSH only; Tailscale needs no inbound port).
+
+See `deploy/DEPLOY.md` for the full step-by-step runbook. The Firefox extension
+talks to the deployed server too: its `host_permissions` includes
+`https://*.ts.net/*` and its options page must point at the tailnet URL.
